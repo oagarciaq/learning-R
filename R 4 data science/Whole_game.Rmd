@@ -1330,3 +1330,81 @@ household |>
     values_drop_na = TRUE
   )
 ```
+
+## 5.4 Widening data
+
+Es realizar todo lo contrario a lo anterior. Pasar datos de las filas a columnas
+
+```{r}
+cms_patient_experience
+```
+
+A continuación se puede observar que en realidad solo hay 6 datos distintos
+
+```{r}
+cms_patient_experience |> 
+  distinct(measure_cd, measure_title)
+```
+
+```{r}
+cms_patient_experience |> 
+  pivot_wider(
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+```
+
+```{r}
+cms_patient_experience |> 
+  pivot_wider(
+    id_cols = starts_with("org"),
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+```
+
+ejemplo de funcionaiento más sencillo sería:
+
+```{r}
+df <- tribble(
+  ~id, ~measurement, ~value,
+  "A",        "bp1",    100,
+  "B",        "bp1",    140,
+  "B",        "bp2",    115, 
+  "A",        "bp2",    120,
+  "A",        "bp3",    105
+)
+```
+
+```{r}
+df |> 
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+```
+
+```{r}
+df |> 
+  distinct(measurement) |> 
+  pull()
+```
+
+```{r}
+df |> 
+  select(-measurement, -value) |> 
+  distinct()
+```
+
+```{r}
+df |> 
+  select(-measurement, -value) |> 
+  distinct() |> 
+  mutate(x = NA, y = NA, z = NA)
+```
+
+```{r}
+usethis::use_blank_slate()
+```
+
+A partir de este punto se trabajará el código a través de un proyecto (Aunque probablemente tome apuntes en este lugar para llevar un buen control)
