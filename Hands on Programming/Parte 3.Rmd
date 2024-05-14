@@ -1,0 +1,1309 @@
+---
+title: 'Parte 3: Slot Machine'
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+## **Capìtulo 7:** Programs
+
+El siguiente còdigo genera tres sìmbolos comunes en este tipo de juegos: diamonds (DD), sevens (7), triple bars (BBB), double bars (BB), single bars (B), cherries (C), and zeroes (0) Los sìmbolos son sleccionados aleatoriamente y cada simbolo aparece con diferentes probabilidades
+
+```{r}
+#Devuelve los valores de la jugada actual
+get_symbols <- function() {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  sample(wheel, size = 3, replace = TRUE,
+    prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+}
+```
+
+```{r}
+get_symbols() #Devuelve 3 valores diferentes en cada ejecuciòn
+```
+
+Un jugador gana un premio si obtiene:
+
+1.  Tres ìmbolos iguales
+
+2.  Tres barras (De cualquier tipo
+
+3.  Una o màs cerezas
+
+![](images/clipboard-1063044692.png)
+
+![](images/clipboard-2015823588.png)
+
+Los programas en R pueden ser guardads como Scripts o como funciones.
+
+Se crearà la funciòn "score" para calcular el premio
+
+```{r}
+#Funcion que simula la slot machine
+play <- function() {
+  symbols <- get_symbols()
+  print(symbols)
+  score(symbols)
+}
+```
+
+Lo ideal es dividir los còdigos en pequeñas tareas para facilitar la programaciòn. hay dos tipos de estas subtareas en R. sequential steps y parallel cases
+
+### Sequential steps
+
+![](images/clipboard-1674165262.png)
+
+un ejemplo de esto es la funciòn play() que se programò anteriormente
+
+```{r}
+play <- function() {
+  # step 1: Genera los sìmbolos
+  symbols <- get_symbols()
+  # step 2: Muestra los sìmbolos
+  print(symbols)
+  # step 3: Puntea los sìmbolos
+  score(symbols)
+}
+```
+
+### Parallel Cases
+
+![El procesopuede incluir ambos tipos de subtareas](images/clipboard-4069731437.png)
+
+![](images/clipboard-413621591.png)
+
+### if Statements
+
+Las subtareas en paralelos se crearàn con la ayuda de los condiocionales. La lògica de los condicionales en R es parecido a lo siguiente:
+
+`if (this) {`
+
+`that`
+
+`}`
+
+```{r}
+#Si num es negativo entonces el valor es multiplicado por -1
+num=-5
+if (num < 0) {
+  num <- num * -1
+}
+```
+
+```{r}
+num <- -1
+if (num < 0) {
+  print("num is negative.")
+  print("Don't worry, I'll fix it.")
+  num <- num * -1
+  print("Now num is positive.")
+}
+num
+```
+
+```{r}
+  x <- 1
+  if (3 == 3) {
+  x <- 2
+}
+x
+```
+
+```{r}
+x <- 1
+  if (TRUE) { #La condiciòn ya de por sì es verdadera asì que no necesita evaluarla y automàticamente se entrarà al còdigo del condicional
+  x <- 2
+}
+x
+```
+
+```{r}
+x <- 1
+if (x == 1) {
+  x <- 2
+  if (x == 1) {
+    x <- 3
+  }
+}
+x
+```
+
+### Else Statements
+
+Lo que debe el còdigo si el resultado es falso
+
+`if (this) {`
+
+`Plan A`
+
+`} else {`
+
+`Plan B`
+
+`}`
+
+```{r}
+a <- 0.14
+dec <- a - trunc(a) #obtengo los valores decimales de un nùmero
+dec
+
+#Si el nùmero es mayor a 0,5 
+if (dec >= 0.5) {
+  a <- trunc(a) + 1
+} else {
+  a <- trunc(a)
+}
+a
+```
+
+```{r}
+a <- 12
+b <- 13
+
+if (a > b) {
+  print("A wins!")
+} else if (a < b) {
+  print("B wins!")
+} else {
+  print("Tie.")
+}
+```
+
+La siguiente es la estructrura que seguirà el còdigo para la puntuaciòn de la màquina:[
+
+`if ( # Case 1: all the same ) {  (((1)))`
+
+``` prize <- # look up the prize``(((2))) ```
+
+``` } else if ( # Case 2: all bars ) {``(((3))) ```
+
+``` prize <- # assign $5``(((4))) ```
+
+`} else {`
+
+``` # count cherries prize``(((5))) ```
+
+``` <- # calculate a prize``(((6))) ```
+
+`}`
+
+``` # count diamonds``(((7))) ```
+
+``` # double the prize if necessary``(((8))) ```
+
+(((1))) Prueba si los tres simbolos son de mismo tipo
+
+(((3))) Prueba si los simbolos son todos barras
+
+(((2))) Busca el premio por tres del mismo tipo basado en el símbolo común
+
+(((4))) Asigna un premio de 5
+
+(((5))) Cuenta el nùmero de cerezas
+
+(((6))) Cuenta el nùmero de diamantes
+
+(((7))) Calcula un premio basado en el número de cerezas.
+
+(((8))) Ajusta el premio para los diamantes
+
+![](images/clipboard-2773091093.png)
+
+Cada uno de los bloquees corresponde a una subtarea dentro del programa. Se puede tratar de programar subtarea por subtarea.
+
+la funciòn final lucira parecido a la siguiente
+
+```{r}
+score <- function(symbols){
+  #Calcula un precio
+  prize
+}
+```
+
+Para cada sutarea lo mejor es crear un ejemplo con el fin de probarla y no tener que programar toda la funciòn de golpe. Lo que facilita que todo el còdigo funcione correctamente por completo.
+
+```{r}
+symbols <- c("7", "7", "7") # Con este codigo ya puedo correr algunas subtareas
+```
+
+Como en algunas subtareas no funcionarà podemos usar los siguientes
+
+```{r}
+symbols <- c("B", "BB", "BBB")
+```
+
+```{r}
+symbols <- c("C", "DD", "0")
+```
+
+#### Primer caso
+
+Prueba si los tres simbolos son de mismo tipo
+
+```{r}
+symbols
+symbols[1] == symbols[2] & symbols[2] == symbols[3]
+
+symbols[1] == symbols[2] & symbols[1] == symbols[3]
+
+all(symbols == symbols[1])
+
+
+
+length(unique(symbols) == 1)
+#unique devuelve los valores ùnicos del vector (Elimina los duplicados)
+#length calcula el nùmero de elementos dentro del vector
+#En este caso esta instruccion devuelve el valor de 1 si todos los datos del vector son iguales
+
+
+#Crearemos la variable "same" paraa la primer subtarea
+same=same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+
+```
+
+```{r}
+score <- function(symbols){
+  if(symbols[1] == symbols[2] & symbols[2] == symbols[3]){
+    prize <- "Iguales"
+  }
+  else{
+    prize <- "Diferentes"
+  }
+}
+score(symbols)
+```
+
+#### Segundo caso
+
+El vector tiene soo simbolos del tipo barra
+
+```{r}
+symbols <- c("B", "BB", "BBB")
+```
+
+```{r}
+symbols[1] == "B" | symbols[1] == "BB" | symbols[1] == "BBB" & symbols[2] == "B" | symbols[2] == "BB" | symbols[2] == "BBB" & symbols[3] == "B" | symbols[3] == "BB" | symbols[3] == "BBB"
+
+all(symbols %in% c("B", "BB", "BBB")) #Comprueba si todos los valores del vector simbolo son al menos no de los 3 valores del vector
+
+#Crearemos la variable "bars" paraa la segunda subtarea
+same=same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+
+```
+
+Se puede observar que algunos datos del caso uno pueden cumplir tambièn con el caso 2
+
+```{r}
+symbols <- c("B", "B", "B")
+all(symbols %in% c("B", "BB", "BBB"))
+#Pero el condicional saltarà el caso 2 si el caso 1 se cumple asì que nunca se evaluara por defecto ese valor
+```
+
+#### Tercer caso
+
+Esta subtarea establece el valor de la variable prize, lo cual depende de los sìmbolos que se contengan. Lo que generarà el siguiente còdigo
+
+```{r}
+if (same) {
+  symbol <- symbols[1]
+  if (symbol == "DD") {
+   prize <- 100
+  } else if (symbol == "7") {
+    prize <- 80
+  } else if (symbol == "BBB") {
+    prize <- 40
+  } else if (symbol == "BB") {
+    prize <- 5
+  } else if (symbol == "B") {
+    prize <- 10
+  } else if (symbol == "C") {
+    prize <- 10
+  } else if (symbol == "0") {
+   prize <- 0
+  }
+}
+
+```
+
+### Lookup Tables
+
+Es usuar trabajar subconjuntos en R. Para eso puedo crear un vector que capture a relaciòn entre los sìmbolos y sus premios. Este vector puede almacenar símbolos como nombres y valores de premios como elementos.
+
+```{r}
+payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+payouts
+
+payouts["DD"] #Me devuelven los valores correspondientes que posee el vector
+payouts["B"]
+
+unname(payouts["DD"]) #Me oculta el nombre del dato y me muestra solo el valor
+
+```
+
+```{r}
+
+#Esto funciona para traer el valor del dato que necesito saber
+symbols <- c("7", "7", "7")
+symbols[1]
+
+payouts[symbols[1]]
+
+symbols <- c("C", "C", "C")
+payouts[symbols[1]]
+
+#Este paso me ahorra el condicional anterior
+
+#Entonces para el tercer caso tenemos de salida:
+payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25,"B" = 10, "C" = 10, "0" = 0)
+prize <- unname(payouts[symbols[1]])
+```
+
+#### Ultimo caso
+
+Determinar el nùmero de cherriesque hay en los sìmbolos
+
+```{r}
+symbols <- c("C", "DD", "C")
+symbols == "C"
+```
+
+```{r}
+#A la salida de este caso obtenemos
+cherries = sum(symbols == "C") #En este caso por ls reglas de coercion, R cinvertirà los valores booleanos en 1 y 0 y al realizar la suma me devolverà el nùmero de datos que son verdaderos
+sum(symbols == "DD")
+
+#Teniendo la cantidad de cherries podemos ahora sì aplicar la condiciòn para cada cantidad
+
+if (cherries == 2) {
+  prize <- 5
+} else if (cherries == 1) {
+  prize <- 2
+} else {
+  prize <- 0
+}
+
+#Pero este còdigo es algo extenso y puede acortarse màs
+   
+```
+
+Para este caso la mejor soluciòn incluirà el subsetting
+
+```{r}
+c(0, 2, 5) #Se crea un vector que contenga la informaciòn de los precios
+
+c(0, 2, 5)[1] #Elige el primer valor del vector
+
+#Como el valor cherries puede llegar a valer cero, y dentro de lso vectores no existe la posiciòn cero, sumamos el +1 a cada valor de cherries.Pasarìa de contener 0,1,2 a contener 1,2,3 aue son las posiciones de los datos
+
+cherries + 1
+c(0, 2, 5)[cherries + 1] #Devuelve el valor de la tercera posiciòn
+```
+
+Unificando el còdigo completo tenemos:
+
+```{r}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else {
+  cherries <- sum(symbols == "C")
+  prize <- c(0, 2, 5)[cherries + 1]
+}
+
+  diamonds <- sum(symbols == "DD")
+```
+
+La ùltima subtarea solo consiste en duplicar el precio por cada diamente presente.
+
+SI no hay ningùn diamante presente:\
+prize \* 1 \# 1 = 2 \^ 0
+
+Si hay uno\
+prize \* 2 \# 2 = 2 \^ 1
+
+dos\
+prize \* 4 \# 4 = 2 \^ 2
+
+Tres\
+prize \* 8 \# 8 = 2 \^ 3
+
+Codigo final:
+
+```{r}
+score <- function(symbols) {
+  # identify case
+  same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+  bars <- symbols %in% c("B", "BB", "BBB")
+  # get prize
+  if (same) {
+    payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+    prize <- unname(payouts[symbols[1]])
+  } else if (all(bars)) {
+    prize <- 5
+  } else {
+    cherries <- sum(symbols == "C")
+    prize <- c(0, 2, 5)[cherries + 1]
+  }
+  # adjust for diamonds
+  diamonds <- sum(symbols == "DD")
+  prize * 2 ^ diamonds
+}
+```
+
+Y la funciòn play por fìn podrà funcionar
+
+```{r}
+play <- function() {
+symbols <- get_symbols()
+print(symbols)
+score(symbols)
+}
+```
+
+```{r}
+play()
+```
+
+## CHAPTER 8: S3
+
+La slot machine queriamos que arrojara resultados en el sguiente formato
+
+play()\
+\## 0 0 DD\
+\## \$0
+
+Pero en cambio estamos teniendo lo siguiente:
+
+play()\
+\## "0" "0" "DD"\
+\## 0
+
+Otro problema es que si intengo guardar los sìmbolos en una variable, el resultado de la variable difiere del resultado entregado por la funciòn
+
+```{r}
+one_play <- play()
+## "B" "0" "B"
+one_play
+## 0
+```
+
+### The S3 System
+
+Gobierna como R maneja objetos de diferentes clases.
+
+La funciòn print se comporta de la siguiente forma:
+
+```{r}
+num <- 1000000000 #Cuando tengo un vector numèrico, print mostrarà un nùmero
+print(num)
+## 1000000000
+
+class(num) <- c("POSIXct", "POSIXt") #la clase POSIXct seguida de POSIXt imprimirà una fecha
+print(num)
+## "2001-09-08 19:46:40 CST"
+
+#Lo anterior funcion dentro del S3 system
+```
+
+R’s S3 system is built around three components: attributes (especially the class attribute), generic functions, and methods
+
+#### Attributes
+
+Attributes do not affect the values of the object, but stick to the object as a type of metadata that R can use to handle the object. For example, a data frame stores its row and column names as attributes. Data frames also store their class, "data.frame", as an attribute.
+
+```{r}
+attributes(one_play) #Me devuelve los atributos del objeto (tambièn puedo usarla par agregar atributos)
+```
+
+attr takes two arguments: an R object and the name of an attribute (as a character string).
+
+```{r}
+attr(one_play, "symbols") <- c("B", "0", "B") #Establece el atributo symbols 
+attributes(one_play)
+```
+
+para ver solo el atributo en epecífico
+
+```{r}
+attr(one_play, "symbols")
+```
+
+```{r}
+one_play
+
+one_play+1
+```
+
+A continuación se modifica la función play para devolver un precio que contiene los simbolos asociados con él como un atributo llamado symbols. esto con el fin de eliminar la redundancia con el print(symbols)
+
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  print(symbols)
+  score(symbols)
+}
+```
+
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  prize <- score(symbols) #Extraigo el precio de los simbolos
+  attr(prize, "symbols") <- symbols #asigno el atributo a la variable precio
+  prize
+}
+play()
+```
+
+```{r}
+#si asigno el resultado a un nueovo objeto esta vez si se conservará el valor
+two_play <- play()
+two_play
+```
+
+También se pueden establecer los atributos usando la función structure de la siguiente forma
+
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  structure(score(symbols), symbols = symbols)
+}
+three_play <- play()
+three_play
+```
+
+Se pueden escribir funciones propias que busquen y utilicen el atributo. Por ejemplo la siguiente fnción buscará y mostrará el atributo de forma más atractiva
+
+```{r}
+slot_display <- function(prize){
+  # extract symbols
+  symbols <- attr(prize, "symbols")
+  # collapse symbols into single string
+  symbols <- paste(symbols, collapse = " ")
+  # combine symbol with prize as a regular expression
+  # \n is regular expression for new line (i.e. return or enter)
+  string <- paste(symbols, prize, sep = "\n$")
+  # display regular expression in console without quotes
+cat(string)
+}
+slot_display(one_play)
+```
+
+La funcón se vería de la siguiente forma paso a paso
+
+```{r}
+symbols <- attr(one_play, "symbols")
+symbols
+```
+
+```{r}
+symbols <- paste(symbols, collapse = " ")
+symbols
+```
+
+```{r}
+prize <- one_play
+string <- paste(symbols, prize, sep = "\n$")
+string
+```
+
+```{r}
+cat(string)
+```
+
+```{r}
+slot_display(play())
+```
+
+Esta forma de limiar el formato requiere que intervenga de orma manual al construir las funciones. Hay otra forma de hacerlo. La función es **print** y es una función genérica
+
+### Funciones genéricas
+
+```{r}
+print(play())
+```
+
+```{r}
+num <- 1000000000
+print(num)
+## 1000000000
+```
+
+```{r}
+class(num) <- c("POSIXct", "POSIXt")
+print(num)
+## "2001-09-08 19:46:40 CST"
+```
+
+### Methods
+
+```{r}
+print.POSIXct
+```
+
+```{r}
+methods(print)
+```
+
+Esos métodos en el caso de la función print permiten a dicha funcion comportarse dependiendo de la clase del objeto con la cual esté trabajando.
+
+### Method dispatch
+
+```{r}
+class(one_play) <- "slots" #Asigna la clase "slots" a la funcion one_play
+```
+
+El metodo para esta función debe llamarse print.slots
+
+```{r}
+args(print)
+```
+
+```{r}
+print.slots <- function(x, ...){
+  cat("Im using the print.slots method")
+}
+print(one_play)
+one_play
+```
+
+```{r}
+rm(print.slots)
+```
+
+Algunos objetos poseen dos clases
+
+```{r}
+now <- Sys.time()
+attributes(now)
+```
+
+UseMethod will first look for a method that matches the first class listed in the object’s class vector. If UseMethod cannot find one, it will then look for the method that matches the second class
+
+Ahora creemos un método para imprimir de mejor forma la slot machine
+
+```{r}
+print.slots <- function(x, ...) {
+  slot_display(x)
+}
+one_play #La anterior función provoca que todos los objetos que tengan por clase slots, se mustren automaticamente al ejecutar la instrucción. En este caso no encesito usar print para imprimir one_play 
+```
+
+A cntinuación asignaremos la clase slots a la función play(). Como recuerdo. Lo que hicimos fue crear o estandarizar una forma de impresión. Queremos que print imprima en el formato que queramos. Dicho formato lo establecimos en slot_display, la cual asignamos como forma de impresión predeterminada a la clase slots, entonces, todos los objetos cuya clase sea slot, se imprimira bajo es formato que se estableció anteriormente.
+
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  structure(score(symbols), symbols = symbols, class = "slots")
+}
+
+class(play())
+play()
+```
+
+CODIGO DE RESUMEN
+
+```{r}
+#SE CREÓ LA FUNCIÓN slot_display QUE ESTABLECE EL FORMATO EN EL QUE QUIERO IMPRIMIR LOS DATOS
+slot_display <- function(prize){
+  symbols <- attr(prize, "symbols")
+  symbols <- paste(symbols, collapse = " ")
+  string <- paste(symbols, prize, sep = "\n$")
+cat(string)
+}
+
+
+#cREO Y A SU VEZ ASIGNO LA CLASE SLOTS A LA VARIABLE O FUNCIÓN one_play
+class(one_play) <- "slots" #Asigna la clase "slots" a la funcion one_play
+
+#ASIGNO EL FORMATO DE IMPRESIÓN A LA CLASE SLOTS. TODO OBJETO QUE POSEA ESA CLASE SE IMPRIMIRÁ CON EL MIMSO FORMATO 
+print.slots <- function(x, ...) {
+  slot_display(x)
+}
+
+#A PARTIR DE ESTE PUNTO A TODOS LOS ELEMENTOS QUE SE LE ASIGENEN LA CLASE SLOTS SE IMPRIMIRAN BAJO ESE MISMO FORMATO ESTABLECIDO EN LA VARIABLE LÍNEAS ARRIBA POR EJEMPLO CON LA FUNCIÓN PLAY()
+play <- function() {
+  symbols <- get_symbols()
+  structure(score(symbols), symbols = symbols, class = "slots")
+}
+```
+
+### Clases
+
+1.  Choose a name for your class.
+2.  Assign each instance of your class a class attribute.
+3.  Write class methods for any generic function likely to use objects of your class.
+
+Puedo ver los metodos de una clase de la siguiente forma
+
+```{r}
+methods(class = "factor")
+```
+
+La forma en la que afecta no usar metodos es la siguiente
+
+```{r}
+play1 <- play()
+play1
+
+play2 <- play()
+play2
+## 0 B 0 Ambas me imprimen información como esta porque son de la misma clase. Una vez las expreso como vectores cambia la clase por lo que a su vez cambia el metodo
+
+c(play1, play2)
+## [1] 5 0 Termina imprimiendo este valor ya que ha cambiado el métofo. E n este caso ambos valores pierden su clase slots por lo que no se aplica el método que se construyó para esa clase
+
+```
+
+## Capitulo 9: loops
+
+### Expected Values
+
+![](images/clipboard-3552891826.png)
+
+```{r}
+die <- c(1, 2, 3, 4, 5, 6)
+```
+
+La fórmula para la probabilidad en ese caso sería
+
+![![](images/clipboard-3684408617.png)](images/clipboard-4142660290.png)
+
+De igual forma podemos modificar los valores como se hizo en capítulos anteriores
+
+### Expand.grid
+
+Provee una vía rápida para tener cualquier combinación de elementos en n vectores
+
+```{r}
+rolls <-expand.grid(die,die) #Me deveulve un objeto con el listado de todas las combinaciones posibles
+
+rolls <-expand.grid(die,die,die)
+
+rolls$value <- rolls$Var1 + rolls$Var2
+head(rolls,3)
+```
+
+Ahora para calcular la probabilidad de toda esas combinaciones tenemos:\
+*The probability that n independent, random events all occur is equal to the product of the probabilities that each random event occurs.*
+
+![](images/clipboard-2379426775.png)
+
+So the probability that we roll a (1, 1) will be equal to the probability that we roll a one on the first die, 1/8, times the probability that we roll a one on the second die, 1/8:
+
+![](images/clipboard-3735392420.png)
+
+And the probability that we roll a (1, 2) will be:
+
+![](images/clipboard-2713178892.png)
+
+```{r}
+prob <- c("1" = 1/8, "2" = 1/8, "3" = 1/8, "4" = 1/8, "5" = 1/8, "6" = 3/8) #Establezco una probabilidad custom
+prob
+
+rolls$Var1
+```
+
+```{r}
+prob[rolls$Var1] #Cambio las parobabilidades
+```
+
+Ahora añado el valor de probabilidades como columna del dataframe de los dados
+
+```{r}
+rolls$prob1 <- prob[rolls$Var1] #Cambio de probabilidades en el primer dado
+head(rolls, 3)
+
+rolls$prob2 <- prob[rolls$Var2]#Cambio de probabilidades en el segundo dado
+head(rolls, 3)
+
+rolls$prob <- rolls$prob1 * rolls$prob2 #Cambio de probabilidades en el tercer dado
+head(rolls, 3)
+
+```
+
+de acuerdo a las formulas entonces
+
+```{r}
+sum(rolls$value * rolls$prob)
+```
+
+#### Ejercicio
+
+Use expand.grid to make a data frame that contains every possible combination of three symbols from the wheel vector:
+
+```{r}
+wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+
+combos <- expand.grid(wheel, wheel, wheel, stringsAsFactors = FALSE) #EL false es para evitar que genere los valores como factores
+
+combos
+```
+
+Ahora calculamos la probabilidad de obtener cada combinación. Usamos las que generamos para la slot machine
+
+```{r}
+get_symbols <- function() {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  sample(wheel, size = 3, replace = TRUE) #Obtiene una muesra de tres datos entre todos los daos del objeto wheel
+  prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52)
+}
+```
+
+O también podemos generarlas a través de una look up table
+
+```{r}
+prob <- c("DD" = 0.03, "7" = 0.03, "BBB" = 0.06, "BB" = 0.1, "B" = 0.25, "C" = 0.01, "0" = 0.52)
+
+#se genera columnas con las probablidades
+combos$prob1 <- prob[combos$Var1]
+combos$prob2 <- prob[combos$Var2]
+combos$prob3 <- prob[combos$Var3]
+head(combos, 3)
+```
+
+Ahora calculamos la probabilidad total de cada combinación
+
+```{r}
+combos$prob <- combos$prob1 * combos$prob2 * combos$prob3
+head(combos, 3)
+sum(combos$prob)
+```
+
+Puedo calcular el precio de cada combinación de la siguiente forma
+
+```{r}
+symbols <- c(combos[1, 1], combos[1, 2], combos[1, 3])
+symbols
+
+score(symbols)
+```
+
+Pero tenemos 343 combinaciones lo cual hacerlo uno a uno es una tarea imposible. Ahí es donde entran los loops
+
+### for loops
+
+`for (value in that) {`
+
+`this`
+
+`}`
+
+```{r}
+
+for (value in c("My", "first", "for", "loop")) { #Hay tres elementos por lo que se ejecuta tres veces la acción descrita más adelante
+  print("one run")
+}
+```
+
+Si quiere iprimir cada valor del vector que está dentro del vector debo imprimir dicho valor de la suguiente forma
+
+```{r}
+for (value in c("My", "second", "for", "loop")) {
+  print(value)
+}
+```
+
+No es necesario usar value como primer argumento
+
+```{r}
+for (word in c("My", "second", "for", "loop")) {
+  print(word)
+}
+for (string in c("My", "second", "for", "loop")) {
+  print(string)
+}
+for (i in c("My", "second", "for", "loop")) {
+  print(i)
+}
+```
+
+Para guardar los datos en una variable
+
+```{r}
+chars <- vector(length = 4)
+
+words <- c("My", "fourth", "for", "loop")
+  for (i in 1:4) {
+  chars[i] <- words[i]
+}
+chars
+```
+
+Let’s use a for loop to calculate the prize for each row in combos
+
+```{r}
+combos$prize <- NA
+combos
+```
+
+Ahora , para correr la funcion score en las 343 filas sería
+
+```{r}
+for (i in 1:nrow(combos)) {
+  symbols <- c(combos[i, 1], combos[i, 2], combos[i, 3])
+  combos$prize[i] <- score(symbols)
+}
+head(combos, 3)
+
+sum(combos$prize * combos$prob)
+```
+
+Faltaba incluir los diamentes en la funcion score por lo que tendremos
+
+```{r}
+score <- function(symbols) {
+diamonds <- sum(symbols == "DD")
+cherries <- sum(symbols == "C")
+# identify case
+# since diamonds are wild, only nondiamonds
+# matter for three of a kind and all bars
+slots <- symbols[symbols != "DD"]
+same <- length(unique(slots)) == 1
+bars <- slots %in% c("B", "BB", "BBB")
+# assign prize
+if (diamonds == 3) {
+  prize <- 100
+} else if (same) {
+  payouts <- c("7" = 80, "BBB" = 40, "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[slots[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else if (cherries > 0) {
+# diamonds count as cherries
+# so long as there is one real cherry
+  prize <- c(0, 2, 5)[cherries + diamonds + 1]
+} else {
+  prize <- 0
+}
+# double for each diamond
+prize * 2^diamonds
+}
+```
+
+El ciclo se actualizaría de la siguente forma
+
+```{r}
+for (i in 1:nrow(combos)) {
+  symbols <- c(combos[i, 1], combos[i, 2], combos[i, 3])
+  combos$prize[i] <- score(symbols)
+}
+sum(combos$prize * combos$prob)
+```
+
+### While loops
+
+`while (condition) {`
+
+`code`
+
+`}`
+
+```{r}
+broke <- function(start_with) {
+  cash <- start_with
+  n <- 0
+  while (cash > 0) {
+    cash <- cash - 1 + play()
+    n <- n + 1
+  }
+  n
+}
+```
+
+### Repeat loops
+
+Se ejecutan hasta encontrar el comando break
+
+```{r}
+plays_till_broke <- function(start_with) {
+  cash <- start_with
+  n <- 0
+  repeat {
+    cash <- cash - 1 + play()
+    n <- n + 1
+    if (cash <= 0) {
+     break
+  }
+  }
+  n
+}
+plays_till_broke(100)
+```
+
+## Capítulo 10: Velocidad
+
+### Vectorized code
+
+Se pueden observar los siguientes códigos. El primero no está vectorizado. Usa un loop para manipular cada individio del vector individualmente
+
+```{r}
+abs_loop <- function(vec){
+  for (i in 1:length(vec)) {
+    if (vec[i] < 0) {
+      vec[i] <- -vec[i]
+    }
+  }
+  vec
+}
+```
+
+Usa logical subsetting para manipular cada elemento del vector al mismo tiempo
+
+```{r}
+abs_sets <- function(vec){
+  negs <- vec < 0
+  vec[negs] <- vec[negs] * -1
+  vec
+}
+
+```
+
+Lo que R ejecuta más rápidamente es lo siguiente
+
+logical tests, subsetting, and element-wise execution
+
+Comprobemos el cambio en velocida de la siguiente forma
+
+```{r}
+long <- rep(c(-1, 1), 5000000) #rep repeats a value, or vector of values, many times To use rep, give it a vector of values and then the number of times to repeat the vector. R will return the results as a new, longer vector.
+
+system.time(abs_loop(long))
+system.time(abs_sets(long))
+```
+
+Algunas funciones ya vienen optimizadas, como el caso de la función abs, que realiza lo mismo que las dos anteriores
+
+```{r}
+system.time(abs(long))
+```
+
+### How to Write Vectorized Code
+
+Vectorized code is easy to write in R because most R functions are already vectorized. Code based on these functions can easily be made vectorized and therefore fast. To create vectorized code:
+
+1.  Use vectorized functions to complete the sequential steps in your program.
+2.  Use logical subsetting to handle parallel cases. Try to manipulate every element in a case at once
+
+![](images/clipboard-1200561796.png)
+
+```{r}
+vec <- c(1, -2, 3, -4, 5, -6, 7, -8, 9, -10)
+vec < 0
+vec[vec < 0]
+vec[vec < 0] * -1
+```
+
+![](images/clipboard-499574931.png)
+
+#### Ejercicio:
+
+Vectorizar el siguiente código:
+
+```{r}
+change_symbols <- function(vec){
+  for (i in 1:length(vec)){
+  if (vec[i] == "DD") {
+      vec[i] <- "joker"
+    } else if (vec[i] == "C") {
+      vec[i] <- "ace"
+    } else if (vec[i] == "7") {
+      vec[i] <- "king"
+    }else if (vec[i] == "B") {
+      vec[i] <- "queen"
+    } else if (vec[i] == "BB") {
+      vec[i] <- "jack"
+    } else if (vec[i] == "BBB") {
+      vec[i] <- "ten"
+    } else {
+      vec[i] <- "nine"
+    }
+  }
+  vec
+}
+vec <- c("DD", "C", "7", "B", "BB", "BBB", "0")
+change_symbols(vec)
+## "joker" "ace" "king" "queen" "jack" "ten" "nine"
+many <- rep(vec, 1000000)
+system.time(change_symbols(many))
+## user system elapsed
+## 30.057 0.031 30.079
+```
+
+Vectorizado
+
+```{r}
+vec[vec == "DD"]
+## "DD"
+vec[vec == "C"]
+## "C"
+vec[vec == "7"]
+## "vec[vec == "B"]
+## "B"
+vec[vec == "BB"]
+## "BB"
+vec[vec == "BBB"]
+## "BBB"
+vec[vec == "0"]
+## "0"
+```
+
+![](images/clipboard-2972511285.png)
+
+entonces
+
+```{r}
+change_vec <- function (vec) {
+vec[vec == "DD"] <- "joker"
+vec[vec == "C"] <- "ace"
+vec[vec == "7"] <- "king"
+vec[vec == "B"] <- "queen"
+vec[vec == "BB"] <- "jack"
+vec[vec == "BBB"] <- "ten"
+vec[vec == "0"] <- "nine"
+vec
+}
+system.time(change_vec(many))
+## user system elapsed
+## 1.994 0.059 2.051
+```
+
+O usando una lookup table
+
+```{r}
+change_vec2 <- function(vec){
+  tb <- c("DD" = "joker", "C" = "ace", "7" = "king", "B" = "queen", "BB" = "jack", "BBB" = "ten", "0" = "nine")
+  unname(tb[vec])
+}
+system.time(change_vec(many))
+## user system elapsed
+## 0.687 0.059 0.746
+```
+
+### How to Write Fast for Loops in R
+
+First, do as much as you can outside of the for loop. Every line of code that you place inside of the for loop will be run many, many times. If a line of code only needs to be run once, place it outside of the loop to avoid repetition.
+
+Second, make sure that any storage objects that you use with the loop are large enough to contain all of the results of the loop. For example, both loops below will need to store one million values. The first loop stores its values in an object named output that begins with a length of one million:
+
+```{r}
+system.time(
+output <- rep(NA, 1000000)
+for (i in 1:1000000) {
+output[i] <- i + 1
+}
+)
+```
+
+**Whenever you see .Primitive, .Internal, or .Call written in a function’s definition, you can be confident the function is calling code from another language. You’ll get all of the speed advantages of that language by using the function.**
+
+### Vectorized Code in Practice
+
+```{r}
+winnings <- vector(length = 1000000)
+for (i in 1:1000000) {
+winnings[i] <- play()
+}
+mean(winnings)
+```
+
+```{r}
+system.time(for (i in 1:1000000) {
+winnings[i] <- play()
+})
+```
+
+```{r}
+#FENERA UNA MATRIZ
+get_many_symbols <- function(n) {
+wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+vec <- sample(wheel, size = 3 * n, replace = TRUE,
+prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+matrix(vec, ncol = 3)
+}
+get_many_symbols(5)
+```
+
+```{r}
+play_many <- function(n) {
+symb_mat <- get_many_symbols(n = n)
+data.frame(w1 = symb_mat[,1], w2 = symb_mat[,2],
+w3 = symb_mat[,3], prize = score_many(symb_mat))
+}
+```
+
+Para finalizar tenemos la siguiente entrada
+
+```{r}
+symbols <- matrix(
+c("DD", "DD", "DD",
+"C", "DD", "0",
+"B", "B", "B",
+"B", "BB", "BBB",
+"C", "C", "0",
+"7", "DD", "DD"), nrow = 6, byrow = TRUE)
+symbols
+```
+
+El código ya está listom la idea es analizar todo el c+odigo hasta comprender qué hace cada parte del código
+
+```{r}
+# symbols should be a matrix with a column for each slot machine window
+score_many <- function(symbols) {
+# Step 1: Assign base prize based on cherries and diamonds ---------
+## Count the number of cherries and diamonds in each combination
+cherries <- rowSums(symbols == "C")
+diamonds <- rowSums(symbols == "DD")
+## Wild diamonds count as cherries
+prize <- c(0, 2, 5)[cherries + diamonds + 1]
+## ...but not if there are zero real cherries
+### (cherries is coerced to FALSE where cherries == 0)
+prize[!cherries] <- 0
+# Step 2: Change prize for combinations that contain three of a kind
+same <- symbols[, 1] == symbols[, 2] &
+symbols[, 2] == symbols[, 3]
+payoffs <- c("DD" = 100, "7" = 80, "BBB" = 40,
+"BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+prize[same] <- payoffs[symbols[same, 1]]
+# Step 3: Change prize for combinations that contain all bars ------
+bars <- symbols == "B" | symbols == "BB" | symbols == "BBB"
+all_bars <- bars[, 1] & bars[, 2] & bars[, 3] & !same
+prize[all_bars] <- 5
+# Step 4: Handle wilds ---------------------------------------------
+## combos with two diamonds
+two_wilds <- diamonds == 2
+### Identify the nonwild symbol
+one <- two_wilds & symbols[, 1] != symbols[, 2] &
+symbols[, 2] == symbols[, 3]
+two <- two_wilds & symbols[, 1] != symbols[, 2] &
+symbols[, 1] == symbols[, 3]
+three <- two_wilds & symbols[, 1] == symbols[, 2] &
+symbols[, 2] != symbols[, 3]
+### Treat as three of a kind
+prize[one] <- payoffs[symbols[one, 1]]
+prize[two] <- payoffs[symbols[two, 2]]
+prize[three] <- payoffs[symbols[three, 3]]
+## combos with one wild
+one_wild <- diamonds == 1
+### Treat as all bars (if appropriate)
+wild_bars <- one_wild & (rowSums(bars) == 2)
+prize[wild_bars] <- 5
+### Treat as three of a kind (if appropriate)
+one <- one_wild & symbols[, 1] == symbols[, 2]
+two <- one_wild & symbols[, 2] == symbols[, 3]
+three <- one_wild & symbols[, 3] == symbols[, 1]
+prize[one] <- payoffs[symbols[one, 1]]
+prize[two] <- payoffs[symbols[two, 2]]
+prize[three] <- payoffs[symbols[three, 3]]
+# Step 5: Double prize for every diamond in combo ------------------
+unname(prize * 2^diamonds)
+}
+system.time(play_many(10000000))
+## user system elapsed
+## 20.942 1.433 22.367
+```
