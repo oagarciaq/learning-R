@@ -1,0 +1,31 @@
+{
+    "id": "DFCD3FFD",
+    "path": "~/R/learning R/R 4 data science/r4ds/Whole_game.Rmd",
+    "project_path": "Whole_game.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1716755644274.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "9,0",
+        "scrollLine": "46",
+        "rmdVisualMode": "true",
+        "rmdVisualWrapConfigured": "true",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "38824:38150"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1715660858,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1716764115276,
+    "read_only": false,
+    "read_only_alternatives": []
+}

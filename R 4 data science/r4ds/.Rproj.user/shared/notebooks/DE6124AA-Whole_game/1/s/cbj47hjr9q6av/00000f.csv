@@ -1,0 +1,2 @@
+"0","flights |>"
+"0","  distinct(origin, dest, .keep_all = TRUE) # Traigo los valores únicos de origin, dest y mantengo las demás columnas"

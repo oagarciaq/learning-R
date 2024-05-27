@@ -1,0 +1,2 @@
+"0","ggplot(penguins, aes(x = body_mass_g, color = species, fill = species)) + # Relleno y linea basados en el mismo dato adaptando el mismo color"
+"0","  geom_density(alpha = 0.5) # Establesco la opacidad del color establecido. Toma valores entre 0 y 1"

@@ -1,0 +1,2 @@
+"0","    flights |>"
+"0","      select(!year:day) # En lugar de ""!"" también es usar ver códigos con ""-"""

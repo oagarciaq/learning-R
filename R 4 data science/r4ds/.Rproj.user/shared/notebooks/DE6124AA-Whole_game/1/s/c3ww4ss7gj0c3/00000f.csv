@@ -1,0 +1,5 @@
+"0","batters |>"
+"0","  filter(n > 100) |>"
+"0","  ggplot(aes(x = n, y = performance)) +"
+"0","  geom_point(alpha = 1 / 10) +"
+"0","  geom_smooth(se = FALSE)"

@@ -1,0 +1,5 @@
+"0","students |> "
+"0","  rename("
+"0","    student_id = `Student ID`,"
+"0","    full_name = `Full Name`"
+"0","  )"

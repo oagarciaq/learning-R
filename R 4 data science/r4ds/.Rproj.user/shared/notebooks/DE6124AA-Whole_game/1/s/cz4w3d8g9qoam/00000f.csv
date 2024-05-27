@@ -1,0 +1,7 @@
+"0","flights |>"
+"0","  distinct(year, month, day) |>"
+"0","  nrow()"
+"1","[1]"
+"1"," 365"
+"1","
+"

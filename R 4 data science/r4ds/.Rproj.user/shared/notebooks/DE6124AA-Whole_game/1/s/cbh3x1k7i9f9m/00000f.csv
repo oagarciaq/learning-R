@@ -1,0 +1,2 @@
+"0","flights |>"
+"0","  count(origin, dest, sort = TRUE) # Cuenta el número de veces que sucede algo"

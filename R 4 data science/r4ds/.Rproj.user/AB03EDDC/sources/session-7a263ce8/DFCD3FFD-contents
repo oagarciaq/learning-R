@@ -1,0 +1,1638 @@
+---
+title: "INTRODUCCIÓN"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+# 1. Visualización de datos
+
+## 1.1 Introducción
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+library(ggthemes)
+```
+
+## 1.2 Primeros pasos
+
+¿Los pinguinos con alas largas pesan mas o menos que los pinguienos con alas cortas? ¿Qué relación puede tener o cómo puede lucir? ¿Es positivo? ¿Negativo?¿Lineal? ¿No lineal? ¿Varia dependiendo de las especies? ¿Qué hay acerca de la isla en la que viven los pinguinos?
+
+### 1.2.1 el penguins data frame
+
+Es un data frame que se puede encontrar en palmerpenguins.
+
+En un data frame:
+
+-   Las columnas son variables
+
+-   Las filas son observaciones
+
+Un data frame es la colección de columnas y filas.
+
+*Variable:* cantidad, cualidad o propiedad que puede medirse
+
+*Valor:* esl el estado de una variable cuando se mide. El valor de una variable puede cambiar de medida en medida
+
+*Observación:* es un grupo de medidas hechas bajo condiciones similares. Usualmente se realizan todas las medidas en una observación al mismo tiempo en un solo objeto. Una observación contendrá difrentes valores cada una asociada a una variable diferente. A las obserbaciones tambien se les llama data.
+
+*Tabular data:* es un conjunto de valores cada uno asociado con una una variable y una observación. Se considera ordenada si cada valor está en su propia celda, cada variable está en su propia columna, y cada observación en su propia fila
+
+```{r}
+penguins
+glimpse(penguins)
+```
+
+### 1.2.2 Meta final
+
+La meta es diseñar una visualización como la siguiente, mostrando la relación entre las alas y la masa corporal de los pinguinos, tomando en cuenta la especie.
+
+![](images/clipboard-1239595815.png)
+
+### 1.2.3 Creating a ggplot
+
+```{r}
+ggplot(data = penguins) # Grafica un liezno vacío. La idea es que sobre ese lienzo ir agregando o "sumando" capas una sobre la otra
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g) # Ese argumento define como las variables del dataset se les asignan propiedades visuales.
+)
+```
+
+El argumento mapped siempre está definido en la función aes(). Pero los datos aún n se han graficado pues aún no se ha especificado en el codigo como representar las observaciones.
+
+Falta definir el objeto geométrico para representar los datos. Este parámetro inicia siempre por geom\_
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point() # En este caso se represantarann a través de un punto, siendo así un grpafico de dispersión
+```
+
+Con esto podemos ir tratando de sacar conclusiones: La relación aparenta ser positiva, bastante lineal, moderadamente fuere (no hay mucha dispersión al rededor de dicha línea). Pinguinos con alas largas son generalmente más pesados.
+
+### 1.2.4 Adding aesthetics and layers
+
+Las gráficas de disperisón son buenas mostrando relaciones entre dos variables, pero a veces puede haber otra variable que interfiera en el comportamiento. Por ejemplo, en este caso, las diferencias entre especies.
+
+Para ralizarlo solo se agrega una nueva estética, en este caso puede ser de color
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = species)
+) +
+  geom_point()
+```
+
+Cuando una variable categóriga se le asigna una estética, ggplot2 automáticamente asignará un único valro estético a cada nivel de la variable. Esto es llamado *escalamiento*.
+
+Podemos agregar una capa más, en este caso una curva suave que muestre la realción entre la masa corporal y la longitud de la aleta.
+
+Este es un nuevo objeto geométrico por lo que se debe agregar una capa más.
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = species)
+) +
+  geom_point() +
+  geom_smooth(method = "lm") # El argumento "method = "lm"" se usa para espeficicar que dibuje la ínea basandose en un modelo linea
+```
+
+Pero se generaron varias líneas para cada especie, queremos que sea una sola para toda la gráfica. En este caso se definieron las asignaciones eséticas de forma global (en el ggplot) por lo que se aplican a las capas geométricas subsecentes de ahí hacia abajo. Como definimos los colores en el global, entonces eso dividió los datos en función de las especies, por lo que al palicar la aplicar la nueva gráfica se aplica esta división. Por s parte si definimos los colores dentro de la gráfica de dispersión, esta está dividida solo dentro de dicha grafica.
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point(mapping = aes(color = species)) +
+  geom_smooth(method = "lm")
+```
+
+Podemos agregar adempas, formas para ayudar diferenciar los datos
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point(mapping = aes(color = species, shape = species)) +
+  geom_smooth(method = "lm")
+```
+
+Finalmente podemos mejorar los ejes agregando otra capa. Algunes argumentos son explicatores, como el nombre de los ejes, pero además conserva lso argumentos estéticos anteriormente tratados.
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point(aes(color = species, shape = species)) +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Body mass and flipper length",
+    subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+    x = "Flipper length (mm)", y = "Body mass (g)",
+    color = "Species", shape = "Species"
+  ) +
+  scale_color_colorblind() # Esa nueva capa además me modifica los colores parwa que puedan ser vistos por daltónicos
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(y = bill_depth_mm, x = bill_length_mm)
+) +
+  geom_point()
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = species, y = bill_length_mm)
+) +
+  geom_point()
+```
+
+species es un dato categórico. Los gráficos de dispersión cuand ambos ejes son valores numéricos.
+
+```{r}
+# ggplot(data = penguins) +
+#  geom_point()
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  aes(x = bill_depth_mm, y = bill_length_mm)
+) +
+  geom_point(na.rm = TRUE) # Remuve los valores desaparecidos sin un alerta
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  aes(x = bill_depth_mm, y = bill_length_mm)
+) +
+  geom_point(na.rm = TRUE) +
+  labs(caption = "Data come from the palmerpenguins package.") # Caption agrega un pie de página en la parte inferior derecha
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(y = body_mass_g, x = flipper_length_mm)
+) +
+  geom_point(aes(color = bill_depth_mm), na.rm = TRUE) +
+  geom_smooth(na.rm = TRUE)
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = island)
+) +
+  geom_point() +
+  geom_smooth(se = FALSE) # 	Display confidence interval around smooth? (TRUE by default, see level to control.)
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point() +
+  geom_smooth()
+
+ggplot() +
+  geom_point(
+    data = penguins,
+    mapping = aes(x = flipper_length_mm, y = body_mass_g)
+  ) +
+  geom_smooth(
+    data = penguins,
+    mapping = aes(x = flipper_length_mm, y = body_mass_g)
+  )
+```
+
+## 1.3 ggplot2 calls
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point()
+```
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+```{r}
+penguins |>
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+## 1.4 Visualizing distributions
+
+El cómo se visualiza la distribución de una variable depende de el tipo de variable: Categórica o numérica
+
+### 1.4.1 Variable categórica
+
+Lo es si toma un pequeño conjuunto de valores. Es mejor usar un diagrama de barras en este caso.
+
+```{r}
+ggplot(penguins, aes(x = species)) +
+  geom_bar()
+```
+
+Cuando no se tienen las categorías ordenes lo mejor es ordenarlas. Para eso se debe transformar la variable en un factor (Que es como R mejor maneja los datos) y reordenar los niveles de ese factor.
+
+```{r}
+ggplot(penguins, aes(x = fct_infreq(species))) + # Convierto la variable ne un factor
+  geom_bar()
+```
+
+### 1.4.2 Variable numérica
+
+Pueden tomar un rango de valores numéricos. Es suceptible de sumas, restas o promedios. Pueden ser continuas o discretas. Uno de los mejores gráficos para este tipo de daos es el histograma.
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 200)
+```
+
+Se puede modifcar el ancho del intervalo del histograma. Se hace con el argumento *bindwith*.
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 20)
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 2000)
+```
+
+Otra alternativa para los datos numéricos es gráfico de densidad, el cual es una forma suavizada del histograma. Ideal para datos continuos.
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_density()
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(y = species)
+) +
+  geom_bar()
+```
+
+```{r}
+ggplot(penguins, aes(x = species)) +
+  geom_bar(color = "red")
+
+ggplot(penguins, aes(x = species)) +
+  geom_bar(fill = "red", color = "blue")
+```
+
+```{r}
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = 0.01)
+
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = 0.10)
+
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = 1)
+```
+
+## 1.5 Visualizing relationships
+
+### 1.5.1 Variable numérica y categórica
+
+Lo mejor es usar un box-plot. Es un tipo de gráfica para las medidas de posición (Percentiles) que describen una disribución. EL diagrama consta de:
+
+-   una caja que indica el rango intermedio de los datos. se extiende desde el percentil 25 hasta el 75 (llamado IQR). En el centro hay una linea que muestra la mediana, es decir, el perecentil 50. Esto da idea de la dispersión de la distribución.
+
+-   Puntos visuales que muestran oservaciones que caen más de 1,5 veces el IQR desde cualquier extremo de la caja. Son puntos inusuales, atípicos.
+
+-   Una línea (o extremo) que se extiende desde cada extremo de la caja y llega al punto no atípico más lejano en la distribución.
+
+![](images/clipboard-3150964300.png)
+
+```{r}
+ggplot(penguins, aes(x = species, y = body_mass_g)) +
+  geom_boxplot()
+```
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, color = species)) +
+  geom_density(linewidth = 0.75) # Modifica el ancho de la línea
+```
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, color = species, fill = species)) + # Relleno y linea basados en el mismo dato adaptando el mismo color
+  geom_density(alpha = 0.5) # Establesco la opacidad del color establecido. Toma valores entre 0 y 1
+```
+
+### 1.5.2 Dos variables categóricas
+
+Podemos usar columnas apiladas
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar()
+```
+
+Con esto podemos ver la cantidad de pinguinos por islas y el tipo de pinguinos en cada isla, pero no podemos ver que porcentaje hay de cada uno así que podemos mostrarlo de la siguiente forma
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill") # Grafica con respecto al 100% mas no con la cantidad
+```
+
+### 1.5.3 Dos variables numéricas
+
+Como ya se mencionó anteriormente lo mejor en este caso es un gráfico de dispersión.
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+### 1.5.4 Tres o más variables
+
+En la siguiente gráfica colores rpresentan especies y figuras rpresentan islas
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = island))
+```
+
+Lo anterior hace ver desordenado y crea dificultad al entenderlo.. Para eso podemos dividir la gráfica en *facetas*. Son subgráficas que muestran un subconjunto cada una.
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = species)) +
+  facet_wrap(~island)
+```
+
+```{r}
+glimpse(mpg)
+```
+
+```{r}
+ggplot(
+  mpg,
+  aes(x = hwy, y = displ, color = cty)
+) +
+  geom_point()
+
+ggplot(
+  mpg,
+  aes(x = hwy, y = displ, size = cty)
+) +
+  geom_point()
+
+ggplot(
+  mpg,
+  aes(x = hwy, y = displ, size = cty, color = cty)
+) +
+  geom_point()
+
+ggplot(
+  mpg,
+  aes(x = hwy, y = displ, size = cty, color = cty, shape = drv)
+) +
+  geom_point()
+```
+
+```{r}
+ggplot(
+  penguins,
+  aes(x = bill_depth_mm, y = bill_length_mm, color = species)
+) +
+  geom_point()
+```
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(
+    x = bill_length_mm, y = bill_depth_mm,
+    color = species, shape = species
+  )
+) +
+  geom_point() +
+  labs(color = "Species")
+#>The code provided in the exercise yields two separate legends because the legend for color is renamed to "Species" but the legend for shape is not, and is named "species" by default instead. To fix it, we would need to explicitly rename the shape legend as well.
+```
+
+Solución al problema de la gráfica anterior:
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(
+    x = bill_length_mm, y = bill_depth_mm,
+    color = species, shape = species
+  )
+) +
+  geom_point() +
+  labs(
+    color = "Species",
+    shape = "Species"
+  )
+#> Warning: Removed 2 rows containing missing values (`geom_point()`).
+```
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "fill")
+```
+
+## 1.6 Saving your plots
+
+La función que se encarga de guardar las gráficas como imágenes es ggsave(). Guarda la gráfica creada más recientemente el disco.
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+ggsave(filename = "penguin-plot.png")
+```
+
+```{r}
+ggplot(mpg, aes(x = class)) +
+  geom_bar()
+ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+ggsave("mpg-plot.pdf")
+```
+
+# 2. Flujo de trabajo: Basicos
+
+```{r}
+1 / 200 * 30
+#> [1] 0.15
+(59 + 73 + 2) / 3
+#> [1] 44.66667
+sin(pi / 2)
+#> [1] 1
+```
+
+```{r}
+x <- 3 * 4
+```
+
+```{r}
+primes <- c(2, 3, 5, 7, 11, 13)
+```
+
+```{r}
+primes * 2
+#> [1]  4  6 10 14 22 26
+primes - 1
+#> [1]  1  2  4  6 10 12
+```
+
+```{r}
+# create vector of primes
+primes <- c(2, 3, 5, 7, 11, 13)
+
+# multiply primes by 2
+primes * 2
+#> [1]  4  6 10 14 22 26
+```
+
+```{r}
+# function_name(argument1 = value1, argument2 = value2, ...)
+```
+
+```{r}
+seq(from = 1, to = 10)
+```
+
+# 3. Transformación de datos
+
+```{r}
+library(nycflights13)
+flights
+```
+
+```{r}
+View(flights)
+```
+
+```{r}
+print(flights, width = Inf)
+```
+
+### 3.1.3 dplyr basics
+
+En las funciones:
+
+-   El primer argumento siempre es el dataframe.
+
+-   Los argumentos subsiguientes suelen describir sobre qué columnas operar, utilizando los nombres de las variables (sin comillas).
+
+-   La salida siempre es un nuevo dataframe
+
+Debido a que cada verbo hace una cosa bien, resolver problemas complejos generalmente requerirá combinar múltiples verbos, y lo haremos con el operador de tubería, \|\>. x \|\> f(y) es equivalente a f(x, y). y x \|\> f(y) \|\> g(z) es equivalente a g(f(x, y), z).
+
+```{r}
+flights |>
+  filter(dest == "IAH") |>
+  group_by(year, month, day) |>
+  summarize(
+    arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
+```
+
+## 3.2 Rows
+
+Los verbos o funciones mas importantes son:
+
+-   filter(): cambia qué filas están presentes sin alterar su orden
+
+-   arrange(): cambia el orden de las filas sin alterar cuáles están presentes
+
+### 3.2.2 filter()
+
+```{r}
+flights |>
+  filter(dep_delay > 120) # Muesra que filas tiene un retraso mayor a 120
+```
+
+```{r}
+flights |>
+  filter(month == 1 & day == 1) # Muestra los datos que sean del primero de enero
+
+flights %>% # Es lo mismo que escribir |>
+  filter(month == 1 | month == 2)
+```
+
+%in%. Este mantiene las filas donde la variable es igual a uno de los valores a la derecha:
+
+```{r}
+flights |>
+  filter(month %in% c(1, 2)) # meses correspondientes a enero y febrero
+```
+
+When you run [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) dplyr executes the filtering operation, creating a new data frame, and then prints it. It doesn’t modify the existing `flights` dataset because dplyr functions never modify their inputs. To save the result, you need to use the assignment operator, `<-`
+
+```{r}
+jan1 <- flights |>
+  filter(month == 1 & day == 2)
+```
+
+### 3.2.3 arrange()
+
+Camhia el orden de las filas basado en el valor de las columnas. Si se usa más de una columna se usan para desempatar algunos valores
+
+```{r}
+flights |>
+  arrange(year, month, day, dep_time)
+```
+
+Se puede usar des() dentro de arrange()
+
+```{r}
+flights |>
+  arrange(desc(dep_delay))
+```
+
+### 3.2.4 distinct()
+
+Encuentra todos los valores únicos.
+
+```{r}
+flights |>
+  distinct()
+
+flights |> # Find all unique origin and destination pairs
+  distinct(origin, dest)
+```
+
+Si quiero sacar los valores únicos de una columna pero quiero traerme otras columnas que se vean modificadas por esas solo tengo que hacer lo siguiente:
+
+```{r}
+flights |>
+  distinct(origin, dest, .keep_all = TRUE) # Traigo los valores únicos de origin, dest y mantengo las demás columnas
+```
+
+Si quiero determinar el número de ocurrencias
+
+```{r}
+flights |>
+  count(origin, dest, sort = TRUE) # Cuenta el número de veces que sucede algo
+```
+
+```{r}
+flights |>
+  filter(arr_delay >= 120)
+flights |>
+  filter(dest %in% c("IAH", "HOU"))
+flights |>
+  filter(carrier %in% c("UA", "AA", "DL"))
+flights |>
+  filter(month %in% c(6, 7, 8))
+flights |>
+  filter(arr_delay >= 120 & dep_delay <= 0) |>
+  view()
+flights |>
+  filter(dep_delay >= 60 & dep_delay - arr_delay > 30)
+```
+
+```{r}
+flights |>
+  arrange(desc(dep_delay)) |>
+  arrange(sched_dep_time) |>
+  relocate(dep_delay, sched_dep_time) # Cambia la posición de las columnas
+```
+
+```{r}
+flights |>
+  mutate(speed = distance / (air_time / 60)) |> # Crea nueva columas que en funcion de variables existentes. También puede modificar y eliminar columnas. En este caso crea la columna speed
+  arrange(desc(speed)) |>
+  relocate(speed)
+```
+
+```{r}
+flights |>
+  distinct(year, month, day) |>
+  nrow()
+```
+
+```{r}
+flights |>
+  arrange(desc(distance)) |>
+  relocate(distance)
+```
+
+```{r}
+flights |>
+  arrange(distance) |>
+  relocate(distance)
+```
+
+## 3.3 Columnas
+
+Hay 4 verbos importantes que afectan las columnas sin cambiar las filas
+
+### 3.3.1 mutate()
+
+Agrega una columna calculada a partir de otras columnas
+
+```{r}
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60
+  )
+```
+
+```{r}
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .before = 1 # Nos permite agregar las columnas a la izquierda en lugar de la derecha
+  )
+```
+
+El punto "." es un indicio de que ".before" es un argumento para la función, no el nombre de una tercera variable nueva que estamos creando. También sse puede usar ".after" para agregar después de una variable, y tanto en ".before" como en ".after" puedes usar el nombre de la variable en lugar de una posición. Por ejemplo, se podría agregar las nuevas variables después de "day":
+
+```{r}
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .after = day
+  )
+```
+
+Alternativamente, puedes controlar qué variables se conservan con el argumento *.keep*. Si le ingresamos el argumento *used,* veremos solo las columnas que hayan estado involucradas en el cálculo de la nueva columna.
+
+```{r}
+flights |>
+  mutate(
+    gain = dep_delay - arr_delay,
+    hours = air_time / 60,
+    gain_per_hour = gain / hours,
+    .keep = "used"
+  )
+```
+
+### 3.3.2 select()
+
+Es común recibir datasets con miles de variables. Con esta función podemos elegir las variables que necesitamos.
+
+-   Sleccionar columnas por nombres
+
+    ```{r}
+    flights |>
+      select(year, month, day)
+    ```
+
+-   Seleccionar columnas entre columnas
+
+    ```{r}
+    flights |>
+      select(year:day)
+    ```
+
+-   Seleccionar todas las columnas excepto las que están entre año y día
+
+    ```{r}
+    flights |>
+      select(!year:day) # En lugar de "!" también es usar ver códigos con "-"
+    ```
+
+-   Selecionar todas las comlunas que son caracteres
+
+    ```{r}
+    flights |>
+      select(where(is.character))
+    ```
+
+Similar a is.character hay algunas funciones que nos ayudan a determinar los tipos de datos
+
+-   `starts_with("abc")`: matches names that begin with "abc".
+
+-   `ends_with("xyz")`: matches names that end with "xyz".
+
+-   `contains("ijk")`: matches names that contain "ijk".
+
+-   `num_range("x", 1:3)`: matches `x1`, `x2` and `x3`.
+
+Se pueden renombrar variables usando `select` e `=`
+
+```{r}
+flights |>
+  select(tail_num = tailnum) # Nombre nuevo = Nombre anterior
+```
+
+### 3.3.3 rename()
+
+Si a diferencia del anterior se requiere renombrar la columna sin eliminar las demás, se puede usar esta función
+
+```{r}
+flights |>
+  rename(tail_num = tailnum)
+```
+
+```{r}
+# janitor::clean_names() #Limpia lso nombres de las columnas
+```
+
+### 3.3.4 relocate()
+
+Mueve variables. Por defecto las trae al frente
+
+```{r}
+flights |>
+  relocate(time_hour, air_time)
+```
+
+Al igual que mutate() puedo usar `.after` y `.before`
+
+```{r}
+flights |>
+  relocate(year:dep_time, .after = time_hour)
+flights |>
+  relocate(starts_with("arr"), .before = dep_time)
+```
+
+```{r}
+flights |>
+  relocate(dep_time, sched_dep_time, dep_delay)
+```
+
+```{r}
+flights |>
+  select(dep_time, dep_delay, arr_time)
+
+flights |>
+  select(starts_with("dep"), starts_with("arr"))
+
+flights |>
+  select(dep_time:arr_time, -contains("sched"))
+```
+
+```{r}
+flights |>
+  select(dep_time, dep_time, dep_time, dep_time)
+```
+
+```{r}
+flights |> select(contains("TIME")) # Contains ignora las mayúsculas
+
+flights |>
+  select(contains("TIME", ignore.case = FALSE)) # Para que tenga en cuenta las mayúsculas
+```
+
+```{r}
+flights |>
+  rename(air_time_min = air_time) |>
+  relocate(air_time_min)
+```
+
+```{r}
+# flights |>
+#  select(tailnum) |>
+#  arrange(arr_delay) #El error se da porque primero selecciono solo va columna tailnum, por lo que ya no hay más columnas para tener de referencia para ordenar las filas
+```
+
+## 3.4 The pipe
+
+find the fastest flights to Houston's IAH airport. Para eso se necesita usar `filter()`, `mutate()`, `select()`, and `arrange()`
+
+```{r}
+flights |>
+  filter(dest == "IAH") |>
+  mutate(speed = distance / air_time * 60) |>
+  select(year:day, dep_time, carrier, speed) |>
+  arrange(desc(speed))
+```
+
+La forma en que se vería el código anterior sin usar el pipe es la siguiente
+
+```{r}
+arrange(
+  select(
+    mutate(
+      filter(
+        flights,
+        dest == "IAH"
+      ),
+      speed = distance / air_time * 60
+    ),
+    year:day, dep_time, carrier, flight, speed
+  ),
+  desc(speed)
+)
+```
+
+O mediante objetos:
+
+```{r}
+flights1 <- filter(flights, dest == "IAH")
+flights2 <- mutate(flights1, speed = distance / air_time * 60)
+flights3 <- select(flights2, year:day, dep_time, carrier, flight, speed)
+arrange(flights3, desc(speed))
+```
+
+## 3.5 Groups
+
+### 3.5.1 group_by()
+
+Divide el conjunto de datos en grupos significativos para el análisis:
+
+```{r}
+flights |>
+  group_by(month)
+```
+
+Esto no cambia los datos pero se indica que están agrupados por mes(). Eso significa que las operaciones ahora funcionarán por mes.
+
+### 3.5.2 summarize()
+
+En conjunto con la función anterior podemos calcular el promedio con respecto a un tipo de dato agrupado. En este caso está grupado por meses.
+
+```{r}
+flights |>
+  group_by(month) |>
+  summarize(
+    avg_delay = mean(dep_delay)
+  )
+```
+
+Nos devolvió resultados vacíos. Esto sucede porque hay algunas vacías y los valores van a tender a ese estado. Habría que ignorarlos de la siguiente forma:
+
+```{r}
+flights |>
+  group_by(month) |>
+  summarize(
+    avg_delay = mean(dep_delay, na.rm = TRUE)
+  )
+```
+
+Se pueden crear varios resúmenes en una misma función sumarize(). Por ejemplo n() devuelve el número de filas en cada grupo:
+
+```{r}
+flights |>
+  group_by(month) |>
+  summarize(
+    avg_delay = mean(dep_delay, na.rm = TRUE),
+    n = n()
+  )
+```
+
+### 3.5.3 The slice\_ functions
+
+-   `df |> slice_head(n = 1)` takes the first row from each group.
+
+-   `df |> slice_tail(n = 1)` takes the last row in each group.
+
+-   `df |> slice_min(x, n = 1)` takes the row with the smallest value of column `x`.
+
+-   `df |> slice_max(x, n = 1)` takes the row with the largest value of column `x`.
+
+-   `df |> slice_sample(n = 1)` takes one random row.
+
+Se puede seleccionar más de un valor, como por ejemplo seleccionar solo el 10%
+
+```{r}
+flights |>
+  group_by(dest) |>
+  slice_max(arr_delay, n = 1, with_ties = FALSE) |>
+  relocate(dest)
+```
+
+Pero hay 108 filas, cuando en realidad solo ay 105 grupos. Lo que sucede es que se conservan los valores empatos por lo que hay que especificar que no queremos esos.
+
+### 3.5.4 Agrupando en múltiples variables
+
+You can create groups using more than one variable. For example, we could make a group for each date.
+
+```{r}
+daily <- flights |>
+  group_by(year, month, day)
+daily
+```
+
+Cuando se resume un fragmento agrupado por más de una variable, cada resumen se desprende del último grupo. En retrospectiva, esta no fue una excelente manera de hacer que esta función funcione, pero es difícil de cambiar sin romper el código existente. Para que sea obvio lo que está sucediendo, dplyr muestra un mensaje que le indica cómo puede cambiar este comportamiento
+
+```{r}
+# daily_flights <- daily |>
+#  summarize(n=n(
+#  ))
+```
+
+```{r}
+daily_flights <- daily |>
+  summarize(
+    n = n(),
+    .groups = "drop_last"
+  )
+daily_flights
+```
+
+### 3.5.5 Ungrouping
+
+Remover grupos.
+
+```{r}
+daily |>
+  ungroup()
+```
+
+```{r}
+daily |>
+  ungroup() |>
+  summarize(
+    avg_delay = mean(dep_delay, na.rm = TRUE),
+    flights = n()
+  )
+```
+
+### 3.5.6 .by
+
+Es una alternativa a group_by()
+
+```{r}
+flights |>
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE),
+    n = n(), # Numero de datos
+    .by = month
+  )
+```
+
+```{r}
+flights |>
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE),
+    n = n(),
+    .by = c(origin, dest)
+  )
+```
+
+```{r}
+flights |>
+  group_by(carrier) |>
+  summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE)) |>
+  arrange(desc(avg_dep_delay))
+```
+
+```{r}
+flights |>
+  group_by(dest) |>
+  arrange(dest, desc(dep_delay)) |>
+  slice_head(n = 5) |>
+  relocate(dest, dep_delay)
+```
+
+```{r}
+flights |>
+  group_by(hour) |>
+  summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE)) |>
+  ggplot(aes(x = hour, y = avg_dep_delay)) +
+  geom_smooth()
+```
+
+```{r}
+flights |>
+  slice_min(dep_delay, n = -5) |> # Un valor negativo no provoca ningún cambio
+  relocate(dep_delay)
+
+flights |>
+  slice_min(dep_delay, n = 5) |>
+  relocate(dep_delay)
+
+flights |>
+  slice_max(dep_delay, n = -5) |>
+  relocate(dep_delay)
+
+flights |>
+  slice_max(dep_delay, n = 5) |>
+  relocate(dep_delay)
+```
+
+```{r}
+df <- tibble(
+  x = 1:5,
+  y = c("a", "b", "a", "a", "b"),
+  z = c("K", "K", "L", "L", "K")
+)
+
+df |>
+  group_by(y)
+
+df |>
+  arrange(y)
+
+df |>
+  group_by(y) |>
+  summarize(mean_x = mean(x))
+
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x))
+
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x), .groups = "drop")
+
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x))
+
+df |>
+  group_by(y, z) |>
+  mutate(mean_x = mean(x))
+```
+
+## **3.6 Case study: aggregates and sample size**
+
+Siempre que realice una agregación, siempre es una buena idea incluir un recuento (). De esa manera, puede asegurarse de que no está sacando conclusiones basadas en cantidades muy pequeñas de datos.
+
+```{r}
+batters <- Lahman::Batting |>
+  group_by(playerID) |>
+  summarize(
+    performance = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
+    n = sum(AB, na.rm = TRUE)
+  )
+batters
+```
+
+```{r}
+batters |>
+  filter(n > 100) |>
+  ggplot(aes(x = n, y = performance)) +
+  geom_point(alpha = 1 / 10) +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+batters |>
+  arrange(desc(performance))
+```
+
+# 4. Flujo de trabajo: code style
+
+`install.packages("styler")`
+
+`Ctrl + Shift + P`y luego escribo "styler"
+
+# 5. Data tidying
+
+## 5.2 Tidy data
+
+Se pueden representar los mismos datos de formas diferentes como se muestra a continuación
+
+```{r}
+table1
+table2
+table3
+```
+
+These are all representations of the same underlying data, but they are not equally easy to use. One of them, `table1`, will be much easier to work with inside the tidyverse because it’s **tidy**.
+
+Hay 3 reglas para hacer unos datos ordenados:
+
+1.  Each variable is a column; each column is a variable.
+
+2.  Each observation is a row; each row is an observation.
+
+3.  Each value is a cell; each cell is a single value.
+
+![](images/clipboard-2014476713.png)
+
+```{r}
+# Compute rate per 10,000
+table1 |>
+  mutate(rate = cases / population * 10000)
+
+# Compute total cases per year
+table1 |>
+  group_by(year) |>
+  summarize(total_cases = sum(cases))
+
+# Visualize changes over time
+ggplot(table1, aes(x = year, y = cases)) +
+  geom_line(aes(group = country), color = "grey50") +
+  geom_point(aes(color = country, shape = country)) +
+  scale_x_continuous(breaks = c(1999, 2000)) # x-axis breaks at 1999 and 2000
+```
+
+```{r}
+table2 |>
+  pivot_wider(
+    names_from = type,
+    values_from = count
+  ) |>
+  mutate(rate = cases / population * 10000)
+#> # A tibble: 6 × 5
+#>   country      year  cases population  rate
+#>   <chr>       <dbl>  <dbl>      <dbl> <dbl>
+#> 1 Afghanistan  1999    745   19987071 0.373
+#> 2 Afghanistan  2000   2666   20595360 1.29
+#> 3 Brazil       1999  37737  172006362 2.19
+#> 4 Brazil       2000  80488  174504898 4.61
+#> 5 China        1999 212258 1272915272 1.67
+#> 6 China        2000 213766 1280428583 1.67
+```
+
+```{r}
+table3 |>
+  separate_wider_delim(
+    cols = rate,
+    delim = "/",
+    names = c("cases", "population"),
+  ) |>
+  mutate(
+    cases = as.numeric(cases),
+    population = as.numeric(population),
+    rate = cases / population * 10000
+  )
+#> # A tibble: 6 × 5
+#>   country      year  cases population  rate
+#>   <chr>       <dbl>  <dbl>      <dbl> <dbl>
+#> 1 Afghanistan  1999    745   19987071 0.373
+#> 2 Afghanistan  2000   2666   20595360 1.29
+#> 3 Brazil       1999  37737  172006362 2.19
+#> 4 Brazil       2000  80488  174504898 4.61
+#> 5 China        1999 212258 1272915272 1.67
+#> 6 China        2000 213766 1280428583 1.67
+```
+
+## **5.3 Lengthening data**
+
+tidyr provides two functions for pivoting data: [`pivot_longer()`](https://tidyr.tidyverse.org/reference/pivot_longer.html) and [`pivot_wider()`](https://tidyr.tidyverse.org/reference/pivot_wider.html). We’ll first start with [`pivot_longer()`](https://tidyr.tidyverse.org/reference/pivot_longer.html) because it’s the most common case. Let’s dive into some examples.
+
+### **5.3.1 Data in column names**
+
+```{r}
+billboard
+```
+
+In this dataset, each observation is a song. The first three columns (`artist`, `track` and `date.entered`) are variables that describe the song. Then we have 76 columns (`wk1`-`wk76`) that describe the rank of the song in each week[1](https://r4ds.hadley.nz/data-tidy#fn1). Here, the column names are one variable (the `week`) and the cell values are another (the `rank`).
+
+Estos datos se pueden organizar de la siguiente forma usando pivot_longer(). De esta forma ya no tenemos 76 columnas de 76 semanas
+
+```{r}
+billboard |>
+  pivot_longer(
+    cols = starts_with("wk"), # Selecciona las columnas
+    names_to = "week", # Nombre de la nueva columna
+    values_to = "rank", # envia los valores de las columnas a na nueva columna llamada rank
+    values_drop_na = TRUE # Suprimo los NA
+  )
+```
+
+Podemos quitar el valor de de w en la columna y dejar solo el número de la semana
+
+```{r}
+billboard_longer <- billboard |>
+  pivot_longer(
+    cols = starts_with("wk"),
+    names_to = "week",
+    values_to = "rank",
+    values_drop_na = TRUE
+  ) |>
+  mutate(
+    week = parse_number(week) # Extrae solo el número
+  )
+billboard_longer
+```
+
+Si graficamos:
+
+```{r}
+billboard_longer |>
+  ggplot(aes(x = week, y = rank, group = track)) +
+  geom_line(alpha = 0.25) +
+  scale_y_reverse()
+```
+
+### **5.3.2 How does pivoting work?**
+
+Suppose we have three patients with `id`s A, B, and C, and we take two blood pressure measurements on each patient. We’ll create the data with [`tribble()`](https://tibble.tidyverse.org/reference/tribble.html), a handy function for constructing small tibbles by hand:
+
+```{r}
+df <- tribble(
+  ~id, ~bp1, ~bp2,
+  "A", 100, 120,
+  "B", 140, 115,
+  "C", 120, 125
+)
+```
+
+We want our new dataset to have three variables: `id` (already exists), `measurement` (the column names), and `value` (the cell values). To achieve this, we need to pivot `df` longer
+
+```{r}
+df |>
+  pivot_longer(
+    cols = bp1:bp2,
+    names_to = "measurement",
+    values_to = "value"
+  )
+```
+
+### **5.3.3 Many variables in column names**
+
+A veces las columnas pueden tener varias piezas de información que puede ser util como el siguiente dataser
+
+```{r}
+who2
+```
+
+La primera pieza, sp/rel/ep, describe el método utilizado para el diagnóstico, la segunda pieza, m/f, es el género (codificado como una variable binaria en este conjunto de datos), y la tercera pieza, 014/1524/2534/3544/4554/5564/65, es el rango de edad (014 representa 0-14, por ejemplo)
+
+```{r}
+who2 |>
+  pivot_longer(
+    cols = !(country:year),
+    names_to = c("diagnosis", "gender", "age"), # Nuevas columnas
+    names_sep = "_", # La división de las nuevas columnas
+    values_to = "count"
+  )
+```
+
+### **5.3.4 Data and variable names in the column headers**
+
+```{r}
+household # Contiene valores de variables y nombres de variables
+```
+
+```{r}
+household |>
+  pivot_longer(
+    cols = !family,
+    names_to = c(".value", "child"),
+    names_sep = "_",
+    values_drop_na = TRUE
+  )
+```
+
+## 5.4 Widening data
+
+Es realizar todo lo contrario a lo anterior. Pasar datos de las filas a columnas
+
+```{r}
+cms_patient_experience
+```
+
+A continuación se puede observar que en realidad solo hay 6 datos distintos
+
+```{r}
+cms_patient_experience |> 
+  distinct(measure_cd, measure_title)
+```
+
+```{r}
+cms_patient_experience |> 
+  pivot_wider(
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+```
+
+```{r}
+cms_patient_experience |> 
+  pivot_wider(
+    id_cols = starts_with("org"),
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+```
+
+ejemplo de funcionaiento más sencillo sería:
+
+```{r}
+df <- tribble(
+  ~id, ~measurement, ~value,
+  "A",        "bp1",    100,
+  "B",        "bp1",    140,
+  "B",        "bp2",    115, 
+  "A",        "bp2",    120,
+  "A",        "bp3",    105
+)
+```
+
+```{r}
+df |> 
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+```
+
+```{r}
+df |> 
+  distinct(measurement) |> 
+  pull()
+```
+
+```{r}
+df |> 
+  select(-measurement, -value) |> 
+  distinct()
+```
+
+```{r}
+df |> 
+  select(-measurement, -value) |> 
+  distinct() |> 
+  mutate(x = NA, y = NA, z = NA)
+```
+
+```{r}
+usethis::use_blank_slate()
+```
+
+A partir de este punto se trabajará el código a través de un proyecto (Aunque probablemente tome apuntes en este lugar para llevar un buen control)
+
+# 7. Data import
+
+## 7.2 Reading data from a file
+
+```{r}
+students <- read_csv("data/students.csv")
+```
+
+Por defecto el archivo imortao trae los daos en blanco como N/A pero R no reconoce ese dato como un valor en blanco por lo que debemso especificarle
+
+```{r}
+students <- read_csv("data/students.csv", na = c("N/A", ""))
+
+students
+```
+
+adempas hay nommbres de variables con espacios así que podemos arreglarlo de la siguiente forma:\
+
+```{r}
+students |> 
+  rename(
+    student_id = `Student ID`,
+    full_name = `Full Name`
+  )
+```
+
+o usando la funcion clean_names()
+
+```{r}
+students |> janitor::clean_names()
+```
+
+la variable meal_plan es uan variable categórica con un conjunto conocido de posibles valores , lo que deberia ser representado como un factor
+
+```{r}
+students |>
+  janitor::clean_names() |>
+  mutate(meal_plan = factor(meal_plan))
+```
+
+edad está marcado como una variable de texto, porque existe el valor "five"
+
+```{r}
+students <- students |>
+  janitor::clean_names() |>
+  mutate(
+    meal_plan = factor(meal_plan),
+    age = parse_number(if_else(age == "five", "5", age))
+  )
+
+students
+```
+
+con csv puedo leer datos que no necesariamente sean un documento .csv si no que contengan datos en dicho formato
+
+```{r}
+read_csv(
+  "a,b,c
+  1,2,3
+  4,5,6"
+)
+```
+
+podemos modificar ademas de que la primera fila sea la que se use para nombrar las viarbles de la siguiente forma:
+
+```{r}
+read_csv(
+  "The first line of metadata
+  The second line of metadata
+  x,y,z
+  1,2,3",
+  skip = 2 #No toma en cuenta desde la segunda línea hacia atrás
+)
+
+
+read_csv(
+  "# A comment I want to skip
+  x,y,z
+  1,2,3",
+  comment = "#"
+)
+```
+
+en el caso de que los datos no tenga columnas o podemos especificar y asigna valores secuenciales de forma automática
+
+```{r}
+read_csv(
+  "1,2,3
+  4,5,6",
+  col_names = FALSE
+)
+```
+
+tambien podemos pasarle un vector con los nombres
+
+```{r}
+read_csv(
+  "1,2,3
+  4,5,6",
+  col_names = c("x", "y", "z")
+)
+```
+
+### 7.3. Controlando tipos de columnas
+
+csv no trae el tipo de variables que trae por lo que readr las establece automáticaamente
+
+### 7.3.1 Guessing types 
+
+la forma en que readr adivina el tipo de valor es la siguiente:
+
+extrae 1000 filas espaciadas uniformemente desde la primera a la ultima fila ignorando los valores faltantes, luego hace las siguientes preguntas:
+
+-   ¿Contiene solo F, T, FALSE o TRUE (ignorando mayúsculas y minúsculas)? Si es así, es lógico
+
+-   ¿Contiene solo números (por ejemplo, 1, -4.5, 5e6, Inf)? Si es así, es un número.
+
+-   ¿Cumple con el estándar ISO8601? Si es así, es una fecha o una fecha-hora. (Regresaremos a las fechas-hora en más detalle en la Sección 17.2).
+
+-   De lo contrario, debe ser una cadena de texto.
+
+```{r}
+read_csv("
+  logical,numeric,date,string
+  TRUE,1,2021-01-15,abc
+  false,4.5,2021-02-15,def
+  T,Inf,2021-02-16,ghi
+")
+```
+
+### **7.3.2 Missing values, column types, and problems**
+
+```{r}
+simple_csv <- "
+  x
+  10
+  .
+  20
+  30"
+
+read_csv(simple_csv)
+```
+
+Una solucición para modifica el comportamiento anterior cuando, por ejemplo tengo una columna de valores numéricos pero un dato es un texto.
+
+Un enfoque es decirle a readr que x es una columna numérica y luego ver dónde falla. Puedes hacer eso con el argumento col_types, que toma una lista nombrada donde los nombres coinciden con los nombres de las columnas en el archivo CSV:
+
+```{r}
+df <- read_csv(
+  simple_csv, 
+  col_types = list(x = col_double())
+)
+```
+
+se puede averiguar más usando el comando problems()
+
+```{r}
+problems(df)
+```
+
+entonces se corrige el error
+
+```{r}
+read_csv(simple_csv, na = ".")
+```
+
+### **7.3.3 Column types**
+
+hay en total nueve tipos de columnas
+
+-   [`col_logical()`](https://readr.tidyverse.org/reference/parse_atomic.html) and [`col_double()`](https://readr.tidyverse.org/reference/parse_atomic.html) read logicals and real numbers. They’re relatively rarely needed (except as above), since readr will usually guess them for you.
+
+-   [`col_integer()`](https://readr.tidyverse.org/reference/parse_atomic.html) reads integers. We seldom distinguish integers and doubles in this book because they’re functionally equivalent, but reading integers explicitly can occasionally be useful because they occupy half the memory of doubles.
+
+-   [`col_character()`](https://readr.tidyverse.org/reference/parse_atomic.html) reads strings. This can be useful to specify explicitly when you have a column that is a numeric identifier, i.e., long series of digits that identifies an object but doesn’t make sense to apply mathematical operations to. Examples include phone numbers, social security numbers, credit card numbers, etc.
+
+-   [`col_factor()`](https://readr.tidyverse.org/reference/parse_factor.html), [`col_date()`](https://readr.tidyverse.org/reference/parse_datetime.html), and [`col_datetime()`](https://readr.tidyverse.org/reference/parse_datetime.html) create factors, dates, and date-times respectively; you’ll learn more about those when we get to those data types in [Chapter 16](https://r4ds.hadley.nz/factors) and [Chapter 17](https://r4ds.hadley.nz/datetimes).
+
+-   [`col_number()`](https://readr.tidyverse.org/reference/parse_number.html) is a permissive numeric parser that will ignore non-numeric components, and is particularly useful for currencies. You’ll learn more about it in [Chapter 13](https://r4ds.hadley.nz/numbers).
+
+-   [`col_skip()`](https://readr.tidyverse.org/reference/col_skip.html) skips a column so it’s not included in the result, which can be useful for speeding up reading the data if you have a large CSV file and you only want to use some of the columns.
+
+es posible cambiar o anular la columna predeterminada usando el argumento: .default
+
+```{r}
+another_csv <- "
+x,y,z
+1,2,3"
+
+read_csv(
+  another_csv, 
+  col_types = cols(.default = col_character())
+)
+```
+
+o se puede con una columna en específico usando cols_only()
+
+```{r}
+read_csv(
+  another_csv,
+  col_types = cols_only(x = col_character())
+)
+```
+
+## **7.4 Reading data from multiple files**
+
+el siguiente codigo lee el dato de diferentes documentos y los une en un mismo dataframe
+
+```{r}
+sales_files <- c("data/01-sales.csv", "data/02-sales.csv", "data/03-sales.csv")
+read_csv(sales_files, id = "file")u
+```
+
+The `id` argument adds a new column called `file` to the resulting data frame that identifies the file the data come from.
+
+Si se tienen muchos archivos para leer, puede volverse engorroso escribir sus nombres como una lista. En su lugar, se puede usar la función base list.files() para encontrar los archivos buscando un patrón
+
+```{r}
+sales_files <- list.files("data", pattern = "sales\\.csv$", full.names = TRUE)
+sales_files
+```
+
+## **7.5 Writing to a file**
+
+```{r}
+write_csv(students, "students.csv")
+```

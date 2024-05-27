@@ -1,0 +1,2 @@
+"0","flights |>"
+"0","  filter(month == 1 & day == 1) # Muestra los datos que sean del primero de enero"

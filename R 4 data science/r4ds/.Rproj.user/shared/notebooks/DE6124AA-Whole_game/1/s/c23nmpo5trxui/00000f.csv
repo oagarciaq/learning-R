@@ -1,0 +1,2 @@
+"0","flights |>"
+"0","  filter(dep_delay > 120) # Muesra que filas tiene un retraso mayor a 120"

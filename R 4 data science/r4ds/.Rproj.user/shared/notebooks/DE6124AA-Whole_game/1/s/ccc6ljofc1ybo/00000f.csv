@@ -1,0 +1,4 @@
+"0","df |> "
+"0","  select(-measurement, -value) |> "
+"0","  distinct() |> "
+"0","  mutate(x = NA, y = NA, z = NA)"

@@ -1,0 +1,7 @@
+"0","batters <- Lahman::Batting |>"
+"0","  group_by(playerID) |>"
+"0","  summarize("
+"0","    performance = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),"
+"0","    n = sum(AB, na.rm = TRUE)"
+"0","  )"
+"0","batters"

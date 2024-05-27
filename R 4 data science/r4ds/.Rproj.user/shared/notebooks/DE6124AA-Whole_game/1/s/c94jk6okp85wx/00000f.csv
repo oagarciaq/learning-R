@@ -1,0 +1,3 @@
+"0","# flights |>"
+"0","#  select(tailnum) |>"
+"0","#  arrange(arr_delay) #El error se da porque primero selecciono solo va columna tailnum, por lo que ya no hay más columnas para tener de referencia para ordenar las filas"

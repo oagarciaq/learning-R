@@ -1,0 +1,4 @@
+"0","flights |>"
+"0","  mutate(speed = distance / (air_time / 60)) |> # Crea nueva columas que en funcion de variables existentes. También puede modificar y eliminar columnas. En este caso crea la columna speed"
+"0","  arrange(desc(speed)) |>"
+"0","  relocate(speed)"

@@ -1,0 +1,4 @@
+"0","flights1 <- filter(flights, dest == ""IAH"")"
+"0","flights2 <- mutate(flights1, speed = distance / air_time * 60)"
+"0","flights3 <- select(flights2, year:day, dep_time, carrier, flight, speed)"
+"0","arrange(flights3, desc(speed))"

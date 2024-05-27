@@ -1,0 +1,2 @@
+"0","ggplot(penguins, aes(x = fct_infreq(species))) + # Convierto la variable ne un factor"
+"0","  geom_bar()"

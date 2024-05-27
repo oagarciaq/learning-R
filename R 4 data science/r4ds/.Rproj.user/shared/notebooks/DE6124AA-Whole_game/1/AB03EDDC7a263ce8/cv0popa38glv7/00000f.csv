@@ -1,0 +1,7 @@
+"0","df <- read_csv("
+"0","  simple_csv, "
+"0","  col_types = list(x = col_double())"
+"0",")"
+"2","Warning: [38;5;252mOne or more parsing issues, call `problems()` on your data frame for details, e.g.:
+  dat <- vroom(...)
+  problems(dat)[39m"

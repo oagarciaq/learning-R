@@ -1,0 +1,3 @@
+"0","flights |>"
+"0","  slice_min(dep_delay, n = -5) |> # Un valor negativo no provoca ningún cambio"
+"0","  relocate(dep_delay)"

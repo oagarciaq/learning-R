@@ -1,0 +1,6 @@
+"0","table2 |>"
+"0","  pivot_wider("
+"0","    names_from = type,"
+"0","    values_from = count"
+"0","  ) |>"
+"0","  mutate(rate = cases / population * 10000)"

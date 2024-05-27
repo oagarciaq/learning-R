@@ -1,0 +1,5 @@
+"0","flights |>"
+"0","  filter(dest == ""IAH"") |>"
+"0","  mutate(speed = distance / air_time * 60) |>"
+"0","  select(year:day, dep_time, carrier, speed) |>"
+"0","  arrange(desc(speed))"

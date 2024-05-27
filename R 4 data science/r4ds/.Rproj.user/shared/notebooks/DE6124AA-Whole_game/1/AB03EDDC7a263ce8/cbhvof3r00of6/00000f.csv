@@ -1,0 +1,8 @@
+"0","students <- students |>"
+"0","  janitor::clean_names() |>"
+"0","  mutate("
+"0","    meal_plan = factor(meal_plan),"
+"0","    age = parse_number(if_else(age == ""five"", ""5"", age))"
+"0","  )"
+"0",""
+"0","students"

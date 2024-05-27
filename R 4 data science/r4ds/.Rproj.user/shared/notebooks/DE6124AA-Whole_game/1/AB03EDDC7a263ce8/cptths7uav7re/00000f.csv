@@ -1,0 +1,3 @@
+"0","students |>"
+"0","  janitor::clean_names() |>"
+"0","  mutate(meal_plan = factor(meal_plan))"

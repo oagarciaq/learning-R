@@ -1,0 +1,4 @@
+"0","read_csv("
+"0","  another_csv,"
+"0","  col_types = cols_only(x = col_character())"
+"0",")"

@@ -1,0 +1,3 @@
+"0",""
+"0","flights |>"
+"0","  select(contains(""TIME"", ignore.case = FALSE)) # Para que tenga en cuenta las mayúsculas"

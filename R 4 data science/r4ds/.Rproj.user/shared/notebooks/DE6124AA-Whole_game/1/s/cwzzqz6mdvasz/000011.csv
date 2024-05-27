@@ -1,0 +1,1 @@
+"0","#>The code provided in the exercise yields two separate legends because the legend for color is renamed to ""Species"" but the legend for shape is not, and is named ""species"" by default instead. To fix it, we would need to explicitly rename the shape legend as well."

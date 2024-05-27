@@ -1,0 +1,8 @@
+"0","sales_files <- list.files(""data"", pattern = ""sales\\.csv$"", full.names = TRUE)"
+"0","sales_files"
+"1","[1]"
+"1"," ""data/01-sales.csv"""
+"1"," ""data/02-sales.csv"""
+"1"," ""data/03-sales.csv"""
+"1","
+"

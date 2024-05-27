@@ -1,0 +1,7 @@
+"0","billboard |>"
+"0","  pivot_longer("
+"0","    cols = starts_with(""wk""), # Selecciona las columnas"
+"0","    names_to = ""week"", # Nombre de la nueva columna"
+"0","    values_to = ""rank"", # envia los valores de las columnas a na nueva columna llamada rank"
+"0","    values_drop_na = TRUE # Suprimo los NA"
+"0","  )"
